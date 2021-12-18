@@ -2,8 +2,9 @@ import Layout from "@/components/Layout";
 import { API_URL } from "@/config/index";
 import NewsItem from "@/components/NewsItem";
 import Link from "next/link";
+import styles from "@/styles/News.module.css";
 
-export default function Home(props) {
+export default function News(props) {
   return (
     <div>
       <Layout title="Home">
@@ -13,8 +14,8 @@ export default function Home(props) {
           <NewsItem key={item.id} news={item} />
         ))}
         {props.news.length > 0 && (
-          <Link href="/news">
-            <a className="btn-secondary">View All News</a>
+          <Link href="/">
+            <a className={styles.back}>Go Back</a>
           </Link>
         )}
       </Layout>
@@ -28,5 +29,5 @@ export async function getServerSideProps() {
   const news = await res.json();
 
   // Pass data to the page via props
-  return { props: { news: news.slice(0, 5) } };
+  return { props: { news } };
 }
