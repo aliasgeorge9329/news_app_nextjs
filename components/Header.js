@@ -17,6 +17,11 @@ export default function Header() {
             </Link>
           </li>
           <li>
+            <Link href="/news/add">
+              <a>Add News</a>
+            </Link>
+          </li>
+          <li>
             <Link href="/about">
               <a>About</a>
             </Link>

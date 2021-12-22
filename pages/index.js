@@ -2,6 +2,12 @@ import Layout from "@/components/Layout";
 import { API_URL } from "@/config/index";
 import NewsItem from "@/components/NewsItem";
 import Link from "next/link";
+// import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+
+// const client = new ApolloClient({
+//   uri: `${API_URL}/graphql`,
+//   cache: new InMemoryCache(),
+// });
 
 export default function Home(props) {
   return (
@@ -22,11 +28,65 @@ export default function Home(props) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   // Fetch data from external API
-  const res = await fetch(`${API_URL}/api/news`);
+  const res = await fetch(`${API_URL}/sports?_sort=date:ASC&_limit=5`);
   const news = await res.json();
-
-  // Pass data to the page via props
-  return { props: { news: news.slice(0, 5) } };
+  return { props: { news }, revalidate: 1 };
 }
+
+// export async function getServerSideProps() {
+//   // Fetch data from external API
+//   const res = await fetch(`${API_URL}/sports?_sort=date:ASC&_limit=2`);
+//   const news = await res.json();
+
+//   // const { data } = await client.query({
+//   //   query: gql`
+//   //     query {
+//   //       sports(limit: 5, sort: "date:desc") {
+//   //         id
+//   //         name
+//   //         slug
+//   //         date
+//   //         time
+//   //         detail
+//   //         image {
+//   //           formats
+//   //         }
+//   //       }
+//   //     }
+//   //   `,
+//   // });
+
+//   // Pass data to the page via props
+//   // return { props: { news: data.sports } };
+//   return { props: { news } };
+// }
+
+// export async function getServerSideProps() {
+//   // Fetch data from external API
+//   const res = await fetch(`${API_URL}/sports?_sort=date:ASC&_limit=2`);
+//   const news = await res.json();
+
+//   // const { data } = await client.query({
+//   //   query: gql`
+//   //     query {
+//   //       sports(limit: 5, sort: "date:desc") {
+//   //         id
+//   //         name
+//   //         slug
+//   //         date
+//   //         time
+//   //         detail
+//   //         image {
+//   //           formats
+//   //         }
+//   //       }
+//   //     }
+//   //   `,
+//   // });
+
+//   // Pass data to the page via props
+//   // return { props: { news: data.sports } };
+//   return { props: { news } };
+// }

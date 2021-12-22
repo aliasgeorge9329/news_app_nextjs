@@ -3,6 +3,7 @@ import { API_URL } from "@/config/index";
 import NewsItem from "@/components/NewsItem";
 import Link from "next/link";
 import styles from "@/styles/News.module.css";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 
 export default function News(props) {
   return (
@@ -23,11 +24,38 @@ export default function News(props) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   // Fetch data from external API
-  const res = await fetch(`${API_URL}/api/news`);
+  const res = await fetch(`${API_URL}/sports`);
   const news = await res.json();
-
-  // Pass data to the page via props
-  return { props: { news } };
+  return { props: { news }, revalidate: 1 };
 }
+
+// export async function getServerSideProps() {
+//   // Fetch data from external API
+//   // const res = await fetch(`${API_URL}/api/news`);
+//   // const news = await res.json();
+//   // const client = new ApolloClient({
+//   //   uri: `${API_URL}/graphql`,
+//   //   cache: new InMemoryCache(),
+//   // });
+//   // const { data } = await client.query({
+//   //   query: gql`
+//   //     query {
+//   //       sports {
+//   //         id
+//   //         name
+//   //         slug
+//   //         date
+//   //         time
+//   //         detail
+//   //         image {
+//   //           formats
+//   //         }
+//   //       }
+//   //     }
+//   //   `,
+//   // });
+//   // Pass data to the page via props
+//   // return { props: { news: data.sports } };
+// }
