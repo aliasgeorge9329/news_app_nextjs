@@ -2,6 +2,7 @@ import Layout from "@/components/Layout";
 import { API_URL } from "@/config/index";
 import NewsItem from "@/components/NewsItem";
 import Link from "next/link";
+
 // import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 
 // const client = new ApolloClient({
@@ -14,7 +15,7 @@ export default function Home(props) {
     <div>
       <Layout title="Home">
         {props.news.length === 0 && <h1>No News</h1>}
-        <h1>Latest News</h1>
+        {props.news.length != 0 && <h1>Latest News</h1>}
         {props.news.map((item) => (
           <NewsItem key={item.id} news={item} />
         ))}
@@ -30,7 +31,7 @@ export default function Home(props) {
 
 export async function getStaticProps() {
   // Fetch data from external API
-  const res = await fetch(`${API_URL}/sports?_sort=date:ASC&_limit=5`);
+  const res = await fetch(`${API_URL}/sports?_sort=date:ASC&_limit=4`);
   const news = await res.json();
   return { props: { news }, revalidate: 1 };
 }

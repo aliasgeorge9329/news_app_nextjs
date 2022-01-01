@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import moment from "moment";
+import { toast } from "react-toastify";
 
 const client = new ApolloClient({
   uri: `${API_URL}/graphql`,
@@ -13,9 +14,34 @@ const client = new ApolloClient({
 });
 
 export default function SingleNews(news) {
+  const router = useRouter();
+
+  const deleteNews = async (e) => {
+    if (window.confirm("Are you sure want to delte the news")) {
+      const res = await fetch(`${API_URL}/sports/${news.id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message);
+      } else {
+        router.push("/news");
+      }
+    }
+  };
+
   return (
     <Layout>
       <div className={styles.news}>
+        <div className={styles.controls}>
+          <Link href={`/news/edit/${news.id}`}>
+            <button className="btn-edit">Edit News</button>
+          </Link>
+          <button className="btn-delete" onClick={deleteNews}>
+            Delete News
+          </button>
+        </div>
         <span>
           {moment(news.date).format("DD-MM-yyyy")} {news.time}
         </span>
@@ -23,7 +49,7 @@ export default function SingleNews(news) {
         {news.image != "" && (
           <div className={styles.img}>
             <Image
-              src={news.image[0].url ? news.image[0].url : "No Image"}
+              src={news.image ? news.image.slice(-1)[0].url : "No Image"}
               width={900}
               height={600}
             />

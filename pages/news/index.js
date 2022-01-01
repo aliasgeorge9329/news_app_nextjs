@@ -1,61 +1,39 @@
 import Layout from "@/components/Layout";
-import { API_URL } from "@/config/index";
+import { API_URL, NEWS_PER_PAGE } from "@/config/index";
 import NewsItem from "@/components/NewsItem";
 import Link from "next/link";
 import styles from "@/styles/News.module.css";
-import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+import Pagination from "@/components/Pagination";
 
-export default function News(props) {
+export default function News({ news, page, total }) {
   return (
     <div>
       <Layout title="Home">
-        {props.news.length === 0 && <h1>No News</h1>}
-        <h1>Latest News</h1>
-        {props.news.map((item) => (
-          <NewsItem key={item.id} news={item} />
-        ))}
-        {props.news.length > 0 && (
+        {news.length === 0 && <h1>No News</h1>}
+        {news.length > 0 && (
           <Link href="/">
             <a className={styles.back}>Go Back</a>
           </Link>
         )}
+        <h1>Latest News</h1>
+        {news.map((item) => (
+          <NewsItem key={item.id} news={item} />
+        ))}
+        <Pagination page={page} total={total} />
       </Layout>
     </div>
   );
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps({ query: { page = 1 } }) {
+  const start = +page === 1 ? 0 : (+page - 1) * NEWS_PER_PAGE;
   // Fetch data from external API
-  const res = await fetch(`${API_URL}/sports`);
-  const news = await res.json();
-  return { props: { news }, revalidate: 1 };
-}
+  const totalnewsres = await fetch(`${API_URL}/sports/count`);
+  const total = await totalnewsres.json();
 
-// export async function getServerSideProps() {
-//   // Fetch data from external API
-//   // const res = await fetch(`${API_URL}/api/news`);
-//   // const news = await res.json();
-//   // const client = new ApolloClient({
-//   //   uri: `${API_URL}/graphql`,
-//   //   cache: new InMemoryCache(),
-//   // });
-//   // const { data } = await client.query({
-//   //   query: gql`
-//   //     query {
-//   //       sports {
-//   //         id
-//   //         name
-//   //         slug
-//   //         date
-//   //         time
-//   //         detail
-//   //         image {
-//   //           formats
-//   //         }
-//   //       }
-//   //     }
-//   //   `,
-//   // });
-//   // Pass data to the page via props
-//   // return { props: { news: data.sports } };
-// }
+  const res = await fetch(
+    `${API_URL}/sports?_sort=date:ASC&_limit=${NEWS_PER_PAGE}&_start=${start}`
+  );
+  const news = await res.json();
+  return { props: { news, page: +page, total: total } };
+}
